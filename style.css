@@ -67,11 +67,10 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   align-items: center;
 }
 .start-image {
-  max-width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  margin-bottom: 20px;
-  background-color: #2b004f; /* asegura que el contorno de la imagen también sea morado */
+  width: 100vw;            /* Asegura que la imagen ocupe todo el ancho de la pantalla */
+  height: 100vh;           /* Asegura que la imagen ocupe toda la altura de la pantalla */
+  object-fit: cover;       /* La imagen cubrirá el área sin distorsionarse, puede recortarse si es necesario */
+  background-color: #6D32FF;  /* Esto asegura que el contorno de la imagen también sea morado, como mencionaste en el CSS previo */
 }
 .start-buttons{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
 .start-button{
