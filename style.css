@@ -17,6 +17,9 @@
   --radius:14px;
 }
 
+/* ===== CAPAS Y VISIBILIDAD ===== */
+.hidden { display: none !important; }
+
 /* ===== FONDO DEL JUEGO ===== */
 .game-bg{
   position:fixed; inset:0;
@@ -24,16 +27,12 @@
   z-index:-1;           
   pointer-events:none;  
 }
-.game-bg.hidden{ display:none; }
 
 /* Capas del juego */
-.topbar, .board, .hand-wrap, .overlay, .zoom, .turn-banner, .modal-overlay { 
+.topbar, .board, .hand-wrap, .overlay, .zoom, .turn-banner { 
   position:relative; 
   z-index:1; 
 }
-
-/* Portada por encima de todo */
-.start-screen { z-index:60; }
 
 *{box-sizing:border-box}
 html,body{
@@ -51,18 +50,18 @@ body{
 
 .board,.lane,.slot,.hand,.card,.zoom{touch-action:none;}
 img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
-.hidden{display:none}
 
-/* ===== PORTADA (MODIFICADA) ===== */
+/* ===== PORTADA ===== */
 .start-screen {
   position: fixed;
   inset: 0;
-  background-color: #6D32FF !important; /* Morado base solicitado */
+  background-color: #6D32FF; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  z-index: 60;
 }
 
 .start-image {
@@ -70,7 +69,7 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Cubre toda la pantalla sin deformar */
+  object-fit: cover;
   object-position: center;
   z-index: 1;
 }
@@ -82,8 +81,8 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: auto; /* Los empuja hacia abajo */
-  margin-bottom: 12vh; /* Margen inferior para que no tapen detalles */
+  margin-top: auto;
+  margin-bottom: 12vh;
 }
 
 .start-button {
@@ -100,7 +99,7 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .start-button.primary {
   background: var(--accent);
   color: #042312;
-  animation: pulse-light 2s infinite; /* Animación de latido */
+  animation: pulse-light 2s infinite;
 }
 
 .start-button.ghost {
@@ -119,6 +118,75 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   0% { transform: scale(1); box-shadow: 0 6px 20px rgba(123, 228, 149, 0.3); }
   50% { transform: scale(1.04); box-shadow: 0 6px 30px rgba(123, 228, 149, 0.6); }
   100% { transform: scale(1); box-shadow: 0 6px 20px rgba(123, 228, 149, 0.3); }
+}
+
+/* ===== MODAL "CÓMO JUGAR" ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100; /* Siempre por encima de la portada */
+  backdrop-filter: blur(5px);
+}
+
+.modal-card {
+  position: relative;
+  background: #f2f2f2;
+  color: #1a1a1a;
+  border-radius: 20px;
+  padding: 30px;
+  width: min(90vw, 450px);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #ddd;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:hover { background: #bbb; }
+
+.modal-body strong { color: #6D32FF; }
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-actions .btn {
+  background: #6D32FF;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
 }
 
 /* --- Cartel de turno --- */
@@ -145,7 +213,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 }
 .side{display:flex;align-items:center;gap:10px}
 .side-right{justify-content:flex-end}
-.name{opacity:.9;letter-spacing:.3px;font-size:clamp(.9rem,1.8vw,1rem)}
 
 .pollution{
   width:clamp(42px,6vw,56px);height:clamp(42px,6vw,56px);
@@ -154,42 +221,26 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   box-shadow:inset 0 0 0 3px var(--accent),var(--shadow);
   font-weight:700;font-variant-numeric:tabular-nums;font-size:clamp(.9rem,2.2vw,1rem);
 }
-.pollution.hit{animation:pop 420ms ease}
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
 
-/* Cronómetro y texto inferior en negro */
-.timer-wrap, .timer-label, #timer, .rule {
-  color: #000 !important;
-  text-shadow: none !important;
-}
-.timer-wrap{text-align:center}
-.timer-label{opacity:.8;font-size:clamp(.8rem,1.8vw,.9rem)}
-#timer{font-size:clamp(1.2rem,3vw,1.8rem);font-weight:800;letter-spacing:.5px}
-.rule{opacity:.75;font-size:clamp(.75rem,1.7vw,.85rem)}
+.timer-wrap{text-align:center; color: #000;}
+#timer{font-size:clamp(1.2rem,3vw,1.8rem);font-weight:800; color: #000;}
 
-/* --- Tablero (Sin tapete) --- */
+/* --- Tablero --- */
 .board{
   max-width:min(1100px,98vw);
   margin:clamp(6px,2.4vw,20px) auto;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
   position:relative;
 }
 .lane{
   display:grid;grid-template-columns:repeat(5,1fr);
-  gap:var(--gap);padding: 0 !important;
+  gap:var(--gap);
 }
 .slot{
   position:relative;height:var(--slot-h);border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 40%),
-             linear-gradient(0deg,rgba(0,0,0,.25),rgba(0,0,0,.1));
+  background:rgba(255,255,255,0.05);
   outline:2px dashed rgba(255,255,255,.12);outline-offset:-8px;
-  display:grid;place-items:center;color:#cfe5d4;user-select:none;overflow:hidden;
+  display:grid;place-items:center;overflow:hidden;
 }
-.slot.flash{animation:slotFlash 420ms ease}
-@keyframes slotFlash{0%{box-shadow:0 0 0 0 rgba(123,228,149,0)}40%{box-shadow:0 0 18px 6px rgba(123,228,149,.45)}100%{box-shadow:0 0 0 0 rgba(123,228,149,0)}}
 
 /* --- Cartas --- */
 .card{
@@ -201,162 +252,50 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   cursor:pointer;
-  overflow:hidden;
   display:flex;
-  transition:transform .12s,box-shadow .12s;
+  transition:transform .12s;
 }
-.card:hover{transform:translateY(-4px)}
-.card-inner{position:relative;width:100%;height:100%;}
-
 .card-img{
   position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
-  object-position:center center;
   border-radius:calc(var(--radius)-2px);
   z-index:1;
-  pointer-events:none;
 }
-
-.card.has-image::after{
-  content:"";position:absolute;inset:0;z-index:2;
-  border-radius:calc(var(--radius)-2px);
-  background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.35));
-  pointer-events:none;
-}
-
 .card .number{
-  position:absolute;
-  top:clamp(6px,1.2vw,10px);
-  right:clamp(6px,1.2vw,10px);
-  font-size:clamp(1.2rem,2.6vw,1.6rem);
-  font-weight:900;
-  line-height:1;
-  background:rgba(0,0,0,.4);
-  padding:4px 8px;
-  border-radius:8px;
+  position:absolute; top:6px; right:6px;
+  font-size:1.2rem; font-weight:900;
+  background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:6px;
   z-index:3;
 }
-
-.card.in-slot{ width:100%;height:100%; animation:dropBounce 240ms ease; }
-@keyframes dropBounce{0%{transform:scale(.9)}55%{transform:scale(1.02)}100%{transform:scale(1)}}
-.card.fly{position:fixed;pointer-events:none;z-index:1000;will-change:transform;transition:none;}
 
 /* --- Mano --- */
 .hand-wrap{
   max-width:min(1100px,98vw);
-  margin:0 auto clamp(14px,3vh,28px);
-  padding:0 clamp(10px,2.6vw,24px)
+  margin:0 auto 20px;
+  padding:0 20px;
 }
-.hand-title{margin:6px 0;font-size:clamp(.9rem,2vw,1rem);opacity:.85}
-.hand{display:flex;flex-wrap:wrap;gap:clamp(8px,1.6vw,12px);min-height:calc(var(--card-h)+16px)}
-.turn-indicator{margin-top:6px;opacity:.85;font-size:clamp(.9rem,2vw,1rem)}
+.hand{display:flex;flex-wrap:wrap;gap:10px;min-height:var(--card-h)}
 
 /* --- Overlay Final --- */
 .overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:grid;place-items:center;z-index:30
-}
-.overlay.hidden{display:none}
-.overlay-card{
-  background:#11281b;border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;padding:22px;width:min(90vw,420px);
-  text-align:center;box-shadow:var(--shadow)
+  position:fixed;inset:0;background:rgba(0,0,0,0.8);
+  display:grid;place-items:center;z-index:70;
 }
 
-/* --- Zoom de carta --- */
-.zoom{
-  position:fixed;inset:0;
-  display:grid;place-items:center;
-  background:rgba(0,0,0,.55);z-index:25;
-}
-.zoom.hidden{display:none}
-.zoom-card{
-  width:min(90vw,420px);
-  height:min(92vh,540px);
-  border-radius:20px;
-  background:var(--card);
-  border:4px solid var(--card-edge);
-  box-shadow:var(--shadow);
-  position:relative;
-  overflow:hidden;
-  animation:zoomIn 160ms ease;
-}
-.zoom-card img{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  z-index:1;
-}
-@keyframes zoomIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
-
-/* --- Toasts (Fondo igual que turn-banner) --- */
+/* --- Toasts --- */
 .toast-container{
   position:fixed; top:16px; left:50%; transform:translateX(-50%);
-  display:flex; flex-direction:column; gap:8px; z-index:40; pointer-events:none;
+  display:flex; flex-direction:column; gap:8px; z-index:80;
 }
 .toast{
-  background: rgba(0, 0, 0, .55) !important;            
-  border: 1px solid rgba(255, 255, 255, .15) !important;
-  color:#fff; padding:10px 14px; border-radius:12px; font-weight:700;
-  box-shadow:0 8px 24px rgba(0,0,0,.35);
-  backdrop-filter: blur(6px);
-  transform:translateY(-10px); opacity:0; transition:transform .2s ease, opacity .2s ease;
-  text-align:center; min-width: 240px;
+  background: rgba(0, 0, 0, .7);
+  backdrop-filter: blur(8px);
+  color:#fff; padding:12px 20px; border-radius:12px; font-weight:700;
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.toast.in{ transform:translateY(0); opacity:1 }
-.toast.out{ transform:translateY(-10px); opacity:0 }
-
-/* --- Modal "Cómo jugar" centrado --- */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-.modal-card {
-  position: relative;
-  background: #f2f2f2;          
-  color: #000;                  
-  border-radius: 16px;
-  padding: 24px;
-  width: min(90vw, 420px);
-  box-shadow: 0 6px 24px rgba(0,0,0,.4);
-  text-align: left;
-}
-.modal-actions .btn {
-  background: #6D32FF;   /* Morado portada */
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* Efectos visuales de cartas */
-.slot.sun-pop{ animation: sunPop 450ms ease-out; }
-@keyframes sunPop{
-  0% { transform:scale(1); }
-  35% { box-shadow:0 0 24px 10px rgba(255,210,0,0.45); transform:scale(1.03); }
-  100% { transform:scale(1); }
-}
-
-.lane.solar-sweep::after, .lane.nullify-sweep::after {
-  content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
-  left:-120%; width:140%; height:100%;
-  animation: sweep 600ms ease-out forwards;
-}
-@keyframes sweep { to { left:120%; } }
 
 /* Responsividad */
 @media(max-width:880px){
-  :root{--card-w:min(clamp(80px,24vw,110px),clamp(80px,28vh,110px));}
-}
-@media(max-height:420px){
-  :root{--card-w:min(84px,16vw)}
-  .rule{display:none}
+  :root{--card-w:clamp(75px, 18vw, 100px);}
 }
