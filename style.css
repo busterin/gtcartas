@@ -17,7 +17,7 @@
   --radius:14px;
 }
 
-/* ===== CAPAS Y VISIBILIDAD ===== */
+/* ===== UTILIDADES ===== */
 .hidden { display: none !important; }
 
 /* ===== FONDO DEL JUEGO ===== */
@@ -26,12 +26,6 @@
   background: url("assets/Fondo.png") center/cover no-repeat;
   z-index:-1;           
   pointer-events:none;  
-}
-
-/* Capas del juego */
-.topbar, .board, .hand-wrap, .overlay, .zoom, .turn-banner { 
-  position:relative; 
-  z-index:1; 
 }
 
 *{box-sizing:border-box}
@@ -51,7 +45,7 @@ body{
 .board,.lane,.slot,.hand,.card,.zoom{touch-action:none;}
 img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 
-/* ===== PORTADA ===== */
+/* ===== PORTADA (PANTALLA COMPLETA) ===== */
 .start-screen {
   position: fixed;
   inset: 0;
@@ -93,7 +87,7 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   font-size: clamp(1rem, 2.6vw, 1.3rem);
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-  transition: transform .2s ease, filter .2s ease;
+  transition: transform .2s ease;
 }
 
 .start-button.primary {
@@ -109,29 +103,23 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   backdrop-filter: blur(4px);
 }
 
-.start-button:hover {
-  transform: scale(1.08);
-  filter: brightness(1.1);
-}
-
 @keyframes pulse-light {
-  0% { transform: scale(1); box-shadow: 0 6px 20px rgba(123, 228, 149, 0.3); }
-  50% { transform: scale(1.04); box-shadow: 0 6px 30px rgba(123, 228, 149, 0.6); }
-  100% { transform: scale(1); box-shadow: 0 6px 20px rgba(123, 228, 149, 0.3); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 /* ===== MODAL "CÓMO JUGAR" ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100; /* Siempre por encima de la portada */
-  backdrop-filter: blur(5px);
+  z-index: 100;
+  backdrop-filter: blur(4px);
 }
-
 .modal-card {
   position: relative;
   background: #f2f2f2;
@@ -139,163 +127,115 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   border-radius: 20px;
   padding: 30px;
   width: min(90vw, 450px);
-  max-height: 80vh;
-  overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  animation: modalPop 0.3s ease-out;
 }
-
-@keyframes modalPop {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
 .modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: #ddd;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
+  position: absolute; top: 15px; right: 15px;
+  background: #ddd; border: none; width: 32px; height: 32px;
+  border-radius: 50%; font-weight: bold; cursor: pointer;
 }
 
-.modal-close:hover { background: #bbb; }
+/* ===== TABLERO Y JUEGO (CORREGIDO) ===== */
+.topbar {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 10px 20px; z-index: 10;
+}
+/* Texto cronómetro en negro para que resalte sobre el fondo claro de arriba */
+.timer-wrap, #timer { color: #000; font-weight: 800; }
 
-.modal-body strong { color: #6D32FF; }
-
-.modal-actions {
-  margin-top: 20px;
+.board {
+  max-width: min(1100px, 98vw);
+  margin: 20px auto;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre la fila del enemigo y la del jugador */
 }
 
-.modal-actions .btn {
-  background: #6D32FF;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-weight: bold;
-  cursor: pointer;
+.lane {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap);
   width: 100%;
 }
 
-/* --- Cartel de turno --- */
-.turn-banner{
-  position:fixed;top:10px;left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(4px);
-  border:1px solid rgba(255,255,255,.15);
-  color:var(--ink);
-  padding:8px 14px;border-radius:12px;font-weight:800;z-index:20;
-  opacity:0;transition:opacity .25s,transform .25s;
-  font-size:clamp(.9rem,2vw,1rem);
-}
-.turn-banner.show{opacity:1;transform:translateX(-50%)}
-
-/* --- Topbar --- */
-.topbar{
-  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
-  padding:10px clamp(10px,3vw,24px);
-  border-bottom:1px solid rgba(255,255,255,.06);
-  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,0));
-  position:sticky;top:0;z-index:5;
-}
-.side{display:flex;align-items:center;gap:10px}
-.side-right{justify-content:flex-end}
-
-.pollution{
-  width:clamp(42px,6vw,56px);height:clamp(42px,6vw,56px);
-  border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 30% 30%,#2c6b49,#123822);
-  box-shadow:inset 0 0 0 3px var(--accent),var(--shadow);
-  font-weight:700;font-variant-numeric:tabular-nums;font-size:clamp(.9rem,2.2vw,1rem);
+.slot {
+  position: relative;
+  height: var(--slot-h);
+  border-radius: var(--radius);
+  /* Estilo visual de hueco */
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  display: grid;
+  place-items: center;
+  transition: background 0.3s;
 }
 
-.timer-wrap{text-align:center; color: #000;}
-#timer{font-size:clamp(1.2rem,3vw,1.8rem);font-weight:800; color: #000;}
-
-/* --- Tablero --- */
-.board{
-  max-width:min(1100px,98vw);
-  margin:clamp(6px,2.4vw,20px) auto;
-  position:relative;
-}
-.lane{
-  display:grid;grid-template-columns:repeat(5,1fr);
-  gap:var(--gap);
-}
-.slot{
-  position:relative;height:var(--slot-h);border-radius:var(--radius);
-  background:rgba(255,255,255,0.05);
-  outline:2px dashed rgba(255,255,255,.12);outline-offset:-8px;
-  display:grid;place-items:center;overflow:hidden;
+.slot::after {
+  content: "DROP";
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.1);
+  font-weight: 900;
 }
 
-/* --- Cartas --- */
-.card{
-  position:relative;
-  background:var(--card);
-  border:4px solid var(--card-edge);
-  width:var(--card-w);
-  height:var(--card-h);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  cursor:pointer;
-  display:flex;
-  transition:transform .12s;
+/* ===== CARTAS ===== */
+.card {
+  position: relative;
+  background: var(--card);
+  border: 3px solid var(--card-edge);
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: grab;
+  transition: transform 0.1s;
+  overflow: hidden;
 }
-.card-img{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  border-radius:calc(var(--radius)-2px);
-  z-index:1;
-}
-.card .number{
-  position:absolute; top:6px; right:6px;
-  font-size:1.2rem; font-weight:900;
-  background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:6px;
-  z-index:3;
+.card:active { cursor: grabbing; }
+
+.card-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 1;
 }
 
-/* --- Mano --- */
-.hand-wrap{
-  max-width:min(1100px,98vw);
-  margin:0 auto 20px;
-  padding:0 20px;
-}
-.hand{display:flex;flex-wrap:wrap;gap:10px;min-height:var(--card-h)}
-
-/* --- Overlay Final --- */
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.8);
-  display:grid;place-items:center;z-index:70;
+.card .number {
+  position: absolute; top: 5px; right: 5px;
+  background: rgba(0,0,0,0.6);
+  color: #fff; padding: 2px 6px; border-radius: 6px;
+  font-weight: bold; z-index: 3;
 }
 
-/* --- Toasts --- */
-.toast-container{
-  position:fixed; top:16px; left:50%; transform:translateX(-50%);
-  display:flex; flex-direction:column; gap:8px; z-index:80;
+/* ===== MANO ===== */
+.hand-wrap {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
 }
-.toast{
-  background: rgba(0, 0, 0, .7);
-  backdrop-filter: blur(8px);
-  color:#fff; padding:12px 20px; border-radius:12px; font-weight:700;
-  border: 1px solid rgba(255,255,255,0.1);
+.hand {
+  display: flex; justify-content: center; gap: 10px;
+  min-height: var(--card-h);
 }
 
-/* Responsividad */
-@media(max-width:880px){
-  :root{--card-w:clamp(75px, 18vw, 100px);}
+/* Animación cuando una carta entra al slot */
+.card.in-slot {
+  width: 100% !important;
+  height: 100% !important;
+  border-width: 2px;
+}
+
+/* Puntuación (Círculos) */
+.pollution {
+  width: 50px; height: 50px;
+  background: #1a3c26;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: bold;
+}
+
+/* Responsividad extra */
+@media(max-width: 600px) {
+  :root { --gap: 4px; }
+  .board { gap: 10px; }
 }
