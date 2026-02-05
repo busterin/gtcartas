@@ -82,14 +82,14 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .start-buttons{
   position: absolute;
   left: 50%;
-  bottom: clamp(18px, 8vh, 80px);  /* sube/baja aquí si quieres */
+  bottom: clamp(32px, 6vh, 96px);
   transform: translateX(-50%);
   z-index: 2;
 
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  justify-content:center;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* --- cartel de turno --- */
