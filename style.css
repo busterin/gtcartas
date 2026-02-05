@@ -74,6 +74,10 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   object-fit: cover;
   z-index: 1;
 }
+.start-buttons {
+  position: relative;
+  z-index: 2;   /* por encima de la imagen */
+}
 .start-buttons{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
 .start-button{
   font-weight:900; border:none; border-radius:14px; padding:12px 24px;
