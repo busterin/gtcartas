@@ -21,8 +21,8 @@
 .game-bg{
   position:fixed; inset:0;
   background: url("assets/Fondo.png") center/cover no-repeat;
-  z-index:-1;           /* debajo de todo */
-  pointer-events:none;  /* no bloquea clics/arrastres */
+  z-index:-1;
+  pointer-events:none;
 }
 .game-bg.hidden{ display:none; }
 
@@ -34,6 +34,7 @@
 .zoom,
 .turn-banner,
 .modal-overlay { position:relative; z-index:1; }
+
 /* Portada por encima de todo */
 .start-screen { z-index:60; }
 
@@ -56,41 +57,64 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .hidden{display:none}
 
 /* ===== PORTADA ===== */
-/* 1) La portada ancla posiciones */
 .start-screen{
   position: fixed;
   inset: 0;
+  background-color: #6D32FF !important;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  background-color: #6D32FF;
-  z-index: 60;
+  align-items: center;
 }
 
-/* 2) La imagen NO debe empujar nada: va detrás */
+/* Imagen a pantalla completa SIN bloquear clics */
 .start-image{
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  margin: 0;          /* importante: quita el margin-bottom que la empujaba */
+  margin: 0;                /* IMPORTANTÍSIMO: evita empujes raros */
   z-index: 1;
+  pointer-events: none;     /* ✅ ARREGLA que JUGAR vuelva a funcionar */
 }
 
-/* 3) Botones por encima y “más arriba” sobre la imagen */
+/* Botones centrados horizontalmente y colocados abajo */
 .start-buttons{
   position: absolute;
   left: 50%;
   bottom: clamp(32px, 6vh, 96px);
   transform: translateX(-50%);
-  z-index: 2;
+  z-index: 3;
 
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+
+  /* ✅ MUY RECOMENDABLE: panel para que se vean siempre */
+  background: rgba(0,0,0,0.25);
+  padding: 14px 18px;
+  border-radius: 18px;
+  backdrop-filter: blur(6px);
 }
+
+.start-button{
+  font-weight:900; border:none; border-radius:14px; padding:12px 24px;
+  font-size:clamp(1rem,2.6vw,1.2rem); cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.4);
+  transition:transform .2s ease,filter .2s ease; position:relative;
+}
+.start-button.primary{ background:var(--accent); color:#042312; }
+
+/* Ghost con fondo para que no “desaparezca” sobre la imagen */
+.start-button.ghost{
+  background: rgba(0,0,0,0.35);
+  color:#fff;
+  border:2px solid rgba(255,255,255,.6);
+}
+
+.start-button:hover{ transform:scale(1.04); filter:brightness(1.05); }
+.start-screen.hidden{display:none}
 
 /* --- cartel de turno --- */
 .turn-banner{
@@ -177,7 +201,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .card:hover{transform:translateY(-4px)}
 .card-inner{position:relative;width:100%;height:100%;}
 
-/* Imagen ocupa toda la carta */
 .card-img{
   position:absolute;inset:0;
   width:100%;height:100%;
@@ -188,7 +211,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   pointer-events:none;
 }
 
-/* velo */
 .card.has-image::after{
   content:"";position:absolute;inset:0;z-index:2;
   border-radius:calc(var(--radius)-2px);
@@ -196,7 +218,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   pointer-events:none;
 }
 
-/* sólo número visible */
 .card .number{
   position:absolute;
   top:clamp(6px,1.2vw,10px);
@@ -211,7 +232,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   z-index:3;
 }
 
-/* carta en hueco */
 .card.in-slot{
   width:100%;height:100%;
   animation:dropBounce 240ms ease;
@@ -484,9 +504,8 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   background:rgba(0,0,0,.35); padding:4px 8px; border-radius:8px;
   color:#fff;
 }
-/* ===== Ajustes de color solicitados ===== */
 
-/* 1) Cronómetro y texto inferior en negro */
+/* ===== Ajustes de color solicitados ===== */
 .timer-wrap,
 .timer-label,
 #timer,
@@ -495,34 +514,23 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   text-shadow: none !important;
 }
 
-/* 2) "Textos emergentes" (toasts): mantener el color de letra,
-      pero poner el fondo como el del indicador de turno */
+/* Toasts como el indicador de turno */
 .toast {
-  background: rgba(0, 0, 0, .55) !important;            /* igual que turn-banner */
-  border: 1px solid rgba(255, 255, 255, .15) !important;/* igual que turn-banner */
-  /* mantenemos color de texto actual (blanco) */
-}
-/* ===== Quitar el tapete del tablero ===== */
-.board {
-  background: none !important;   /* elimina el color verde/fieltro */
-  border: none !important;       /* quita el borde */
-  box-shadow: none !important;   /* sin sombra exterior */
-  padding: 0 !important;         /* ajusta para no dejar huecos */
+  background: rgba(0, 0, 0, .55) !important;
+  border: 1px solid rgba(255, 255, 255, .15) !important;
 }
 
-/* Opcional: reduce el margen para que quede más integrado */
+/* ===== Quitar el tapete del tablero ===== */
+.board {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
 .lane {
   padding: 0 !important;
 }
-/* === Portada: morado exacto #6D32FF === */
-.start-screen{
-  background-color: #6D32FF !important;
-}
 
-/* Por si la imagen no ocupa toda su caja, que el contorno también sea morado */
-.start-image{
-  background-color: #6D32FF;
-}
 /* ===== Ventana centrada del modal "Cómo jugar" ===== */
 .modal-overlay {
   position: fixed;
@@ -540,8 +548,8 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 /* Tarjeta centrada */
 .modal-card {
   position: relative;
-  background: #f2f2f2;          /* fondo claro como en portada */
-  color: #000;                  /* texto oscuro */
+  background: #f2f2f2;
+  color: #000;
   border-radius: 16px;
   padding: 24px;
   width: min(90vw, 420px);
@@ -568,7 +576,7 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   margin-top: 18px;
 }
 .modal-actions .btn {
-  background: #6D32FF;   /* el mismo morado de la portada */
+  background: #6D32FF;
   color: #fff;
   border: none;
   border-radius: 10px;
