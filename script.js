@@ -341,7 +341,7 @@
             applySpecialEffects('player', card, slotIdx);
           }
 
-          if (state.player.pollution === 0) { cleanupDrag(); endGame('win','¡Llegaste a 0 de contaminación!'); return; }
+          if (state.player.pollution === 0) { cleanupDrag(); endGame('win','¡Llegaste a 0 de deuda!'); return; }
           refreshHandUI();
           cleanupDrag();
           justDragged = true; setTimeout(()=>justDragged=false, 50);
@@ -654,8 +654,8 @@
   };
   const decideByTime = () => {
     const p=state.player.pollution, e=state.enemy.pollution;
-    if (p<e) endGame('win','Ganaste por menor contaminación.');
-    else if (e<p) endGame('lose','El rival tenía menos contaminación.');
+    if (p<e) endGame('win','Ganaste por menor deuda.');
+    else if (e<p) endGame('lose','El rival tenía menos deuda.');
     else endGame('draw','Empate al agotar el tiempo.');
   };
   const tick = () => {
