@@ -11,23 +11,23 @@
   const AFTER_DRAW_PAUSE = 700; // pausa tras animar robo antes de que el rival juegue
 
   // Paths / Cartas clave
-  const SOL_IMG       = "assets/Carta1.png"; // SOL
-  const PANELES_IMG   = "assets/Carta2.png"; // PANELES SOLARES
-  const LUCES_IMG     = "assets/Carta3.png"; // LUCES APAGADAS
-  const RECICLAJE_IMG = "assets/Carta4.png"; // RECICLAJE
-  const PLANTAR_IMG   = "assets/Carta5.png"; // PLANTAR
-  const AGUA_IMG      = "assets/Carta6.png"; // AGUA
+  const SOL_IMG       = "assets/Carta1.png"; // AHORROS (antes SOL)
+  const PANELES_IMG   = "assets/Carta2.png"; // LIQUIDACIÓN (antes PANELES SOLARES)
+  const LUCES_IMG     = "assets/Carta3.png"; // PRÉSTAMO (antes LUCES APAGADAS)
+  const RECICLAJE_IMG = "assets/Carta4.png"; // FACTURA (antes RECICLAJE)
+  const PLANTAR_IMG   = "assets/Carta5.png"; // INVERSIÓN (antes PLANTAR)
+  const AGUA_IMG      = "assets/Carta6.png"; // TARJETA DE CRÉDITO (antes AGUA)
   const CAMBIO_IMG    = "assets/Carta7.png"; // CAMBIO
 
   // --------- Mazo base: 7 cartas ---------
   const baseDeck = [
-    { label: "Sol",               value: 8, image: SOL_IMG },
-    { label: "Paneles Solares",   value: 6, image: PANELES_IMG },
-    { label: "Luces Apagadas",    value: 4, image: LUCES_IMG },
-    { label: "Reciclaje",         value: 0, image: RECICLAJE_IMG },
-    { label: "Plantar",           value: 0, image: PLANTAR_IMG },
-    { label: "Agua",              value: 2, image: AGUA_IMG },
-    { label: "Cambio",            value: 0, image: CAMBIO_IMG },
+    { label: "AHORROS",             value: 8, image: SOL_IMG },
+    { label: "LIQUIDACIÓN",         value: 6, image: PANELES_IMG },
+    { label: "PRÉSTAMO",            value: 4, image: LUCES_IMG },
+    { label: "FACTURA",             value: 0, image: RECICLAJE_IMG },
+    { label: "INVERSIÓN",           value: 0, image: PLANTAR_IMG },
+    { label: "TARJETA DE CRÉDITO",  value: 2, image: AGUA_IMG },
+    { label: "Cambio",              value: 0, image: CAMBIO_IMG },
   ];
 
   // --------- Estado ----------
@@ -37,8 +37,8 @@
     current: 'player',
     timer: MATCH_TIME,
     intervalId: null,
-    nullifyNext: { player: false, enemy: false }, // Luces Apagadas anula próxima
-    doubleNext:  { player: false, enemy: false }, // Agua duplica próxima
+    nullifyNext: { player: false, enemy: false }, // PRÉSTAMO anula próxima
+    doubleNext:  { player: false, enemy: false }, // TARJETA DE CRÉDITO duplica próxima
     firstTurnNoDrawDone: false // no robar en el primer turno de la partida
   };
 
@@ -335,7 +335,7 @@
             state.nullifyNext.player = false;
             triggerNullifySweep('player');
             markSlotNullified(slot);
-            createToast("Tu carta ha sido anulada por LUCES APAGADAS");
+            createToast("Tu carta ha sido anulada por PRÉSTAMO");
           } else {
             applyEffect('player', card);
             applySpecialEffects('player', card, slotIdx);
@@ -468,7 +468,7 @@
   };
 
   const applySpecialEffects = (whoPlayed, card, slotIdx) => {
-    // PANELes SOLARES => elimina SOL del rival y devuelve contaminación
+    // LIQUIDACIÓN => elimina AHORROS del rival y devuelve contaminación
     if (card.image === PANELES_IMG) {
       const opponent = whoPlayed === 'player' ? 'enemy' : 'player';
       const opponentSlots = state[opponent].slots;
@@ -499,20 +499,20 @@
         showDamage(opponent, -(state[opponent].pollution - before));
         renderSlots();
         const whoTxt = opponent === 'enemy' ? 'Rival' : 'Jugador';
-        createToast(`Paneles Solares elimina ${removedCount} Sol · +${restored} contaminación para ${whoTxt}`);
+        createToast(`LIQUIDACIÓN elimina ${removedCount} AHORROS · +${restored} contaminación para ${whoTxt}`);
       }
     }
 
-    // LUCES APAGADAS => anula la siguiente carta del rival
+    // PRÉSTAMO => anula la siguiente carta del rival
     if (card.image === LUCES_IMG) {
       const opponent = whoPlayed === 'player' ? 'enemy' : 'player';
       state.nullifyNext[opponent] = true;
       triggerNullifySweep(opponent);
       const whoTxt = opponent === 'enemy' ? 'Rival' : 'Jugador';
-      createToast(`LUCES APAGADAS: la siguiente carta del ${whoTxt} no tendrá efecto`);
+      createToast(`PRÉSTAMO: la siguiente carta del ${whoTxt} no tendrá efecto`);
     }
 
-    // RECICLAJE => se transforma en otra carta (no Carta4) y aplica su efecto
+    // FACTURA => se transforma en otra carta (no Carta4) y aplica su efecto
     if (card.image === RECICLAJE_IMG) {
       const ownerSlots = state[whoPlayed].slots;
       const slotsEls = whoPlayed === 'player' ? playerSlots : enemySlots;
@@ -522,7 +522,7 @@
       const newCard = randFromDeckExcept(RECICLAJE_IMG);
       ownerSlots[slotIdx] = newCard;
       renderSlots();
-      createToast(`RECICLAJE → se transforma`);
+      createToast(`FACTURA → se transforma`);
 
       // Aplica la carta transformada (base + especiales)
       const mult = state.doubleNext[whoPlayed] ? 2 : 1;
@@ -533,21 +533,21 @@
       return; // ya aplicamos lo necesario
     }
 
-    // PLANTAR => -2 por cada carta en tu propio tablero (incluida esta)
+    // INVERSIÓN => -2 por cada carta en tu propio tablero (incluida esta)
     if (card.image === PLANTAR_IMG) {
       const count = state[whoPlayed].slots.filter(Boolean).length;
       const extra = 2 * count;
       if (extra > 0) {
         state[whoPlayed].pollution = Math.max(0, state[whoPlayed].pollution - extra);
         updatePollutionUI(); pulse(whoPlayed); showDamage(whoPlayed, extra);
-        createToast(`PLANTAR: -${extra} adicional (${count} cartas en mesa)`);
+        createToast(`INVERSIÓN: -${extra} adicional (${count} cartas en mesa)`);
       }
     }
 
-    // AGUA => duplica el efecto base de la PRÓXIMA carta del mismo bando
+    // TARJETA DE CRÉDITO => duplica el efecto base de la PRÓXIMA carta del mismo bando
     if (card.image === AGUA_IMG) {
       state.doubleNext[whoPlayed] = true;
-      createToast(`AGUA: tu próxima carta resta el doble`);
+      createToast(`TARJETA DE CRÉDITO: tu próxima carta resta el doble`);
     }
 
     // CAMBIO => intercambia con la carta del rival enfrente (mismo índice)
@@ -613,13 +613,13 @@
   const enemyPlays = () => {
     const h = state.enemy.hand; if (!h.length) return nextTurn();
 
-    // IA sencilla: prioriza Paneles si hay Sol en mesa del jugador; si no, mayor valor
-    const idxPaneles = h.findIndex(c => c.image === PANELES_IMG);
-    const playerHasSolOnBoard = state.player.slots.some(c => c && c.image === SOL_IMG);
+    // IA sencilla: prioriza LIQUIDACIÓN si hay AHORROS en mesa del jugador; si no, mayor valor
+    const idxLiquidacion = h.findIndex(c => c.image === PANELES_IMG);
+    const playerHasAhorrosOnBoard = state.player.slots.some(c => c && c.image === SOL_IMG);
 
     let playIndex = 0;
-    if (idxPaneles !== -1 && playerHasSolOnBoard) {
-      playIndex = idxPaneles;
+    if (idxLiquidacion !== -1 && playerHasAhorrosOnBoard) {
+      playIndex = idxLiquidacion;
     } else {
       for (let i=1;i<h.length;i++) if (h[i].value>h[playIndex].value) playIndex=i;
     }
@@ -635,7 +635,7 @@
       state.nullifyNext.enemy = false;
       triggerNullifySweep('enemy');
       markSlotNullified(enemySlots[idx]);
-      createToast("Carta del Rival anulada por LUCES APAGADAS");
+      createToast("Carta del Rival anulada por PRÉSTAMO");
     } else {
       applyEffect('enemy',card);
       applySpecialEffects('enemy', card, idx);
