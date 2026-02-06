@@ -132,9 +132,12 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));
   position:sticky;top:0;z-index:5;
 }
-.side{display:flex;align-items:center;gap:10px}
-.side-right{justify-content:flex-end}
-.name{opacity:.9;letter-spacing:.3px;font-size:clamp(.9rem,1.8vw,1rem)}
+.side{
+  display: flex;
+  flex-direction: column;   /* nombre encima del contador */
+  align-items: center;
+  gap: 4px;
+}
 
 .pollution{
   width:clamp(42px,6vw,56px);height:clamp(42px,6vw,56px);
