@@ -91,12 +91,6 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   gap:12px;
   flex-wrap:wrap;
   justify-content:center;
-
-  /* ✅ MUY RECOMENDABLE: panel para que se vean siempre */
-  background: rgba(0,0,0,0.25);
-  padding: 14px 18px;
-  border-radius: 18px;
-  backdrop-filter: blur(6px);
 }
 
 .start-button{
