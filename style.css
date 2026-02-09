@@ -565,6 +565,13 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
   text-shadow: none !important;
 }
 
+.side .name,
+.turn-indicator,
+#turnLabel {
+  color: #000 !important;
+  text-shadow: none !important;
+}
+
 /* Toasts como el indicador de turno */
 .toast {
   background: rgba(0, 0, 0, .55) !important;
