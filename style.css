@@ -60,7 +60,7 @@ img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .start-screen{
   position: fixed;
   inset: 0;
-  background-color: #6D32FF !important;
+  background-color: #fff !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
